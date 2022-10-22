@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Text;
 using System.Linq;
+using System.Data.Entity;
 using CleanBudget.Models;
 using CleanBudget.Database;
 using System.Collections.Generic;
@@ -18,7 +19,7 @@ namespace CleanBudget.Services.Repositories
                 db.SaveChanges();
             }
         }
-
+        
         public void Delete(User item)
         {
             using (var db = new BudgetContext())
@@ -27,75 +28,82 @@ namespace CleanBudget.Services.Repositories
                 db.SaveChanges();
             }
         }
-
+        
         public ICollection<User> GetAll()
         {
             using (var db = new BudgetContext())
             {
-                List<User> users = null;// = db.Users.;
-                return users;
+                return db.Users.ToList();
             }
         }
-
-        public User GetById(int id)
+        
+        public User GetById(string id)
         {
             using (var db = new BudgetContext())
             {
-                User user = null;// = db.Users.;
-                return user;
+                ICollection<User> users = GetAll();
+                return users.Where(u => u.Id.Equals(id)).FirstOrDefault();
             }
         }
-
+        
         public void Update(User item)
         {
             using (var db = new BudgetContext())
             {
-                var user = db.Users.SingleOrDefault(u => item.Id == u.Id);
+                ICollection<User> users = GetAll();
+                var user = users.Where(u => u.Id.Equals(item.Id)).FirstOrDefault();
 
                 if (user != null)
                 {
                     user.Hash = item.Hash;
                     user.Salt = item.Salt;
-                    db.SaveChanges();
+                    db.Entry(user).State = EntityState.Modified;
+                    db.SaveChangesAsync();
                 }
             }
         }
-
+        
         public User Login(string id, string password)
         {
             using (var db = new BudgetContext())
             {
-                var user = db.Users.SingleOrDefault(u => u.Id == id);
+                ICollection<User> users = GetAll();
+                var user = users.Where(u => u.Id.Equals(id)).FirstOrDefault();
                 if (user != null)
                 {
-                    var sha256 = SHA256.Create();
-                    UnicodeEncoding unicodeEncoding = new UnicodeEncoding();
-                    byte[] code = sha256.ComputeHash(unicodeEncoding.GetBytes(password + user.Salt));
-                    string cryptedPass = Convert.ToBase64String(code);
-                    if (cryptedPass.Equals(user.Hash)) return user;
+                    if (Decrypt(password, user.Salt).Equals(user.Hash))
+                        return user;
                 }
                 return null;
             }
         }
-
-        public string GetIdByString(string username)
+        
+        public string GetId(string email)
         {
             using (var db = new BudgetContext())
             {
-                var result = db.Users.SingleOrDefault(u => u.Email == username);
-                if (result == null) return string.Empty;
-                else return result.Id;
+                ICollection<User> users = GetAll();
+                var result = users.Where(u => u.Email.Equals(email)).FirstOrDefault();
+                if (result == null) return null;
+                return result.Id;
             }
         }
-
-        public static Tuple<string, string> Cript(string password)
+        
+        public static Tuple<string, string> Encrypt(string password)
         {
             var sha256 = SHA256.Create();
             var salt = Guid.NewGuid().ToString();
             UnicodeEncoding unicodeEncoding = new UnicodeEncoding();
             byte[] code = sha256.ComputeHash(unicodeEncoding.GetBytes(password + salt));
-            string cryptedPass = Convert.ToBase64String(code);
-            return new Tuple<string, string>(salt, cryptedPass);
+            return new Tuple<string, string>(Convert.ToBase64String(code), salt);
+        }
+
+        public static string Decrypt(string password, string salt)
+        {
+            var sha256 = SHA256.Create();
+            UnicodeEncoding unicodeEncoding = new UnicodeEncoding();
+            byte[] code = sha256.ComputeHash(unicodeEncoding.GetBytes(password + salt));
+            return Convert.ToBase64String(code);
         }
     }
 }

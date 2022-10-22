@@ -19,8 +19,8 @@ namespace CleanBudget.Models
         [Required]
         [MinLength(3)]
         [MaxLength(20)]
-        [Column("Secondname")]
-        public string Secondname { get; set; }
+        [Column("Lastname")]
+        public string Lastname { get; set; }
 
         [Required]
         [MinLength(3)]
@@ -36,5 +36,20 @@ namespace CleanBudget.Models
         [Required]
         [Column("Salt")]
         public string Salt { get; set; }
+
+        public User()
+        {
+
+        }
+
+        public User(string email, string firstname, string lastname, string hash, string salt)
+        {
+            this.Id = Guid.NewGuid().ToString();
+            this.Email = email;
+            this.Firstname = firstname;
+            this.Lastname = lastname;
+            this.Hash = hash;
+            this.Salt = salt;
+        }
     }
 }

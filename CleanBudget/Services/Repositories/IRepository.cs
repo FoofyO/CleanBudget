@@ -1,14 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
+using System.Collections.Generic;
 
 namespace CleanBudget.Services.Repositories
 {
     public interface IRepository<T>
     {
-        T GetById(int id);
+        T GetById(string id);
         ICollection<T> GetAll();
         void Create(T item);
         void Delete(T item);
