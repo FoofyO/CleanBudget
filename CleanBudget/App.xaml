@@ -26,6 +26,9 @@
             <DataTemplate DataType="{x:Type vm:RegisterViewModel}">
                 <v:RegisterView/>
             </DataTemplate>
+            <DataTemplate DataType="{x:Type vm:HomeViewModel}">
+                <v:HomeView/>
+            </DataTemplate>
 
             <!--Styles-->
             <Style x:Key="TitleBarButtonNormal" TargetType="{x:Type Button}">
@@ -81,3 +84,5 @@
         </ResourceDictionary>
     </Application.Resources>
 </Application>
+
+   

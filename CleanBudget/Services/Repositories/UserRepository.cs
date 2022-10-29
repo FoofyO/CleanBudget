@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Text;
 using System.Linq;
-using System.Data.Entity;
+using System.Xml.Linq;
 using CleanBudget.Models;
 using CleanBudget.Database;
 using System.Collections.Generic;
 using System.Security.Cryptography;
+using Microsoft.EntityFrameworkCore;
 
 namespace CleanBudget.Services.Repositories
 {
@@ -19,7 +20,7 @@ namespace CleanBudget.Services.Repositories
                 db.SaveChanges();
             }
         }
-        
+
         public void Delete(User item)
         {
             using (var db = new BudgetContext())
@@ -28,7 +29,7 @@ namespace CleanBudget.Services.Repositories
                 db.SaveChanges();
             }
         }
-        
+
         public ICollection<User> GetAll()
         {
             using (var db = new BudgetContext())
@@ -36,39 +37,49 @@ namespace CleanBudget.Services.Repositories
                 return db.Users.ToList();
             }
         }
-        
+
         public User GetById(string id)
         {
             using (var db = new BudgetContext())
             {
-                ICollection<User> users = GetAll();
-                return users.Where(u => u.Id.Equals(id)).FirstOrDefault();
+                return GetAll().FirstOrDefault(u => u.Id.Equals(id));
             }
         }
-        
+
         public void Update(User item)
         {
             using (var db = new BudgetContext())
             {
-                ICollection<User> users = GetAll();
-                var user = users.Where(u => u.Id.Equals(item.Id)).FirstOrDefault();
+                var user = GetAll().FirstOrDefault(u => u.Id.Equals(item.Id));
 
                 if (user != null)
                 {
+                    user.Email = item.Email;
+                    user.Firstname = item.Firstname;
+                    user.Lastname = item.Lastname;
                     user.Hash = item.Hash;
                     user.Salt = item.Salt;
-                    db.Entry(user).State = EntityState.Modified;
-                    db.SaveChangesAsync();
+                    db.Users.Update(user);
+                    db.SaveChanges();
                 }
             }
         }
-        
-        public User Login(string id, string password)
+
+        public Guid GetId(string email)
         {
             using (var db = new BudgetContext())
             {
-                ICollection<User> users = GetAll();
-                var user = users.Where(u => u.Id.Equals(id)).FirstOrDefault();
+                var result = GetAll().FirstOrDefault(u => u.Email.Equals(email));
+                if (result == null) return Guid.Empty;
+                return result.Id;
+            }
+        }
+
+        public User Login(Guid id, string password)
+        {
+            using (var db = new BudgetContext())
+            {
+                var user = GetAll().FirstOrDefault(u => u.Id.Equals(id));
                 if (user != null)
                 {
                     if (Decrypt(password, user.Salt).Equals(user.Hash))
@@ -77,18 +88,7 @@ namespace CleanBudget.Services.Repositories
                 return null;
             }
         }
-        
-        public string GetId(string email)
-        {
-            using (var db = new BudgetContext())
-            {
-                ICollection<User> users = GetAll();
-                var result = users.Where(u => u.Email.Equals(email)).FirstOrDefault();
-                if (result == null) return null;
-                return result.Id;
-            }
-        }
-        
+
         public static Tuple<string, string> Encrypt(string password)
         {
             var sha256 = SHA256.Create();

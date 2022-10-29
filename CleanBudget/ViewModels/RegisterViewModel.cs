@@ -8,48 +8,55 @@ using System.Windows.Controls;
 using GalaSoft.MvvmLight.Command;
 using GalaSoft.MvvmLight.Messaging;
 using CleanBudget.Services.Repositories;
+using CleanBudget.Database;
 
 namespace CleanBudget.ViewModels
 {
     public class RegisterViewModel : BaseViewModel
     {
+        #region Properties
+        //Services
         private IMessenger messenger;
-        private UserRepository repository;
-        public string Email { get; set; }
-        public string Firstname { get; set; }
-        public string Lastname { get; set; }
-        public string Password { get; set; }
-        public string EmailValidation { get; set; }
-        public string FirstnameValidation { get; set; }
-        public string LastnameValidation { get; set; }
-        public string PasswordValidation { get; set; }
-        public bool IsSpin { get; set; }
-        public bool Checker { get; set; }
-        public string IsVisible { get; set; }
+        private UserRepository userRepository;
+        private AccountRepository accountRepository;
 
-        public RelayCommand LoadCommand { get; set; }
+        //Spinner
+        public bool Checker { get; set; } = true;
+        public bool IsSpin { get; set; } = false;
+        public string IsVisible { get; set; } = "Hidden";
+
+        //Form
+        public string Email { get; set; } = string.Empty;
+        public string Firstname { get; set; } = string.Empty;
+        public string Lastname { get; set; } = string.Empty;
+        public string Password { get; set; } = string.Empty;
+        public string EmailValidation { get; set; } = string.Empty;
+        public string FirstnameValidation { get; set; } = string.Empty;
+        public string LastnameValidation { get; set; } = string.Empty;
+        public string PasswordValidation { get; set; } = string.Empty;
+
+        //Commands
+        public RelayCommand LoadCommand { get; set; } 
         public RelayCommand LoginCommand { get; set; }
         public RelayCommand<PasswordBox> RegisterCommand { get; set; }
         public RelayCommand<PasswordBox> PasswordChangedCommand { get; set; }
+        #endregion
 
-        public RegisterViewModel(IMessenger messenger, UserRepository repository)
+        public RegisterViewModel(IMessenger messenger, UserRepository userRepository, AccountRepository accountRepository)
         {
             this.messenger = messenger;
-            this.repository = repository;
-            IsVisible = "Hidden"; IsSpin = false;
-            Email = Firstname = Lastname = Password = EmailValidation =
-            FirstnameValidation = LastnameValidation = PasswordValidation = string.Empty;
-
-            LoginCommand = new RelayCommand(Login);
+            this.userRepository = userRepository;
+            this.accountRepository = accountRepository;
             LoadCommand = new RelayCommand(Loaded);
+            LoginCommand = new RelayCommand(Login);
             RegisterCommand = new RelayCommand<PasswordBox>(Registration);
             PasswordChangedCommand = new RelayCommand<PasswordBox>(PasswordChanged);
         }
-
-        public void Registration(PasswordBox pwdbox)
+        
+        public async void Registration(PasswordBox pwdbox)
         {
             Checker = true;
-            
+
             //Email
             if (Email == string.Empty)
             {
@@ -95,6 +102,16 @@ namespace CleanBudget.ViewModels
                 Checker = false;
                 PasswordValidation = "* Fill Password field";
             }
+            else if (Password.Length < 8)
+            {
+                Checker = false;
+                PasswordValidation = "* The password is too short";
+            }
+            else if (Password.Length > 20)
+            {
+                Checker = false;
+                PasswordValidation = "* The password is too long";
+            }
             else if (!ValidatorExtensions.IsPasswordValid(Password))
             {
                 Checker = false;
@@ -106,37 +123,46 @@ namespace CleanBudget.ViewModels
             {
                 IsSpin = true;
                 IsVisible = "Visible";
-                Task.Run(() => TryRegister(pwdbox));
+                var register = await Task.Run<bool>(() => TryRegister(pwdbox));
+                if (register)
+                {
+                    PasswordValidation = Email = Firstname = Lastname = string.Empty;
+                    //messenger.Send<SendUserMessage>(new SendUserMessage { User = user });
+                    //messenger.Send<Navigation>(new Navigation { ViewModelType = typeof(LoginViewModel) });
+                }
             }
         }
 
-        public void TryRegister(PasswordBox pwdbox)
+        public Task<bool> TryRegister(PasswordBox pwdbox)
         {
-            if (repository.GetId(Email) == null)
+            bool flag = true;
+            try
             {
-                var crypt = UserRepository.Encrypt(Password);
-                repository.Create(new User(Email, Firstname, Lastname, crypt.Item1, crypt.Item2));
-                IsSpin = false;
-                IsVisible = "Hidden";
-                PasswordClear(pwdbox);
-                PasswordValidation = Email = Firstname = Lastname = string.Empty;
-                //messenger.Send<SendUserMessage>(new SendUserMessage { User = user });
-                //messenger.Send<Navigation>(new Navigation { ViewModelType = typeof(LoginViewModel) });
+                if (userRepository.GetId(Email) == Guid.Empty)
+                {
+                    try
+                    {
+                        var crypt = UserRepository.Encrypt(Password);
+                        var user = new User(Email, Firstname, Lastname, crypt.Item1, crypt.Item2);
+                        var account = new Account(user);
+                        user.SetAccount(account);
+                        userRepository.Create(user);
+                        accountRepository.Create(account);
+                    }
+                    catch (Exception ex) { }
+                }
+                else
+                {
+                    flag = false;
+                    PasswordValidation = "* This Email addres already registered";
+                }
             }
-            else
-            {
-                IsSpin = false;
-                IsVisible = "Hidden";
-                PasswordClear(pwdbox);
-                PasswordValidation = "* This Email addres already registered";
-            }
-        }
-
-        private void PasswordClear(PasswordBox pwdbox) => Application.Current.Dispatcher.Invoke(() => pwdbox.Password = string.Empty);
-
-        private void PasswordChanged(PasswordBox pwdbox)
-        {
-            if (pwdbox != null) Password = pwdbox.Password;
+            catch(Exception ex) { }
+            
+            IsSpin = false;
+            IsVisible = "Hidden";
+            PasswordClear(pwdbox);
+            return Task.FromResult(flag);
         }
 
         public void Login()
@@ -146,5 +172,9 @@ namespace CleanBudget.ViewModels
         }
 
         public void Loaded() => messenger.Send<Resize>(new Resize(700, 500, false));
+        
+        private void PasswordChanged(PasswordBox pwdbox) { if (pwdbox != null) Password = pwdbox.Password; }
+
+        private void PasswordClear(PasswordBox pwdbox) => Application.Current.Dispatcher.Invoke(() => pwdbox.Password = string.Empty);
     }
 }

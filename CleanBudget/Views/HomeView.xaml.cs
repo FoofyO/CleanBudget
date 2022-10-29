@@ -15,9 +15,9 @@ using System.Windows.Shapes;
 
 namespace CleanBudget.Views
 {
-    public partial class RegisterView : UserControl
+    public partial class HomeView : UserControl
     {
-        public RegisterView()
+        public HomeView()
         {
             InitializeComponent();
         }

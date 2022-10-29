@@ -12,9 +12,11 @@ namespace CleanBudget
     {
         public static MainWindow window;
         public static IMessenger messenger;
-        public static UserRepository userRepository;
+        public static HomeViewModel homeViewModel;
         public static MainViewModel mainViewModel;
         public static LoginViewModel loginViewModel;
+        public static UserRepository userRepository;
+        public static AccountRepository accountRepository;
         public static RegisterViewModel registerViewModel;
 
         protected override void OnStartup(StartupEventArgs e)
@@ -23,9 +25,11 @@ namespace CleanBudget
             messenger = new Messenger();
             messenger.Register<Resize>(this, Resize, true);
             userRepository = new UserRepository();
+            accountRepository = new AccountRepository();
             mainViewModel = new MainViewModel(messenger);
+            homeViewModel = new HomeViewModel(messenger);
             loginViewModel = new LoginViewModel(messenger, userRepository);
-            registerViewModel = new RegisterViewModel(messenger, userRepository);
+            registerViewModel = new RegisterViewModel(messenger, userRepository, accountRepository);
 
             mainViewModel.CurrentViewModel = loginViewModel;
 

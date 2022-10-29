@@ -15,7 +15,7 @@
 
         <Grid Grid.Row="0" Background="{StaticResource TitleBarPrimary}" MouseLeftButtonDown="Titlebar_Move" MouseUp="Titlebar_Mouse_Up" MouseMove="Titlebar_Mouse_Move">
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Margin="10,0,0,0">
-                <Image Height="20" Source="../Resources/budget.ico"/>
+                <Image Height="20" Source="../Resources/Icons/budget.ico"/>
 
                 <TextBlock FontSize="14" Margin="10,0,0,0"
                            Text="Clean budget" Foreground="White"

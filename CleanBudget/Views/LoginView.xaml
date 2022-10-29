@@ -29,7 +29,7 @@
             <StackPanel>
                 <TextBlock HorizontalAlignment="Center" Foreground="White" Margin="0,25,0,0"
                        FontSize="28" FontWeight="Bold" Text="Welcome Back!"/>
-               
+
                 <TextBox Foreground="White" HorizontalAlignment="Center" Margin="0,30,0,0"
                      Width="300" FontSize="16" BorderThickness="1"
                      md:HintAssist.Hint="Enter Email" Text="{Binding Email}"
@@ -66,7 +66,7 @@
                     Style="{StaticResource MaterialDesignFlatMidBgButton}" 
                     md:ShadowAssist.ShadowDepth="Depth0" 
                     md:ButtonAssist.CornerRadius="8"/>
-              
+
                 <Button Content="Create Account" FontSize="16" 
                     HorizontalAlignment="Center"
                     Command="{Binding RegisterCommand}"
@@ -77,5 +77,4 @@
             </StackPanel>
         </md:Card>
     </Grid>
-    
 </UserControl>
