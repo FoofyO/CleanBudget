@@ -27,8 +27,8 @@
              md:ShadowAssist.ShadowDepth="Depth3"
              Background="{DynamicResource MaterialDesignPaper}">
             <StackPanel>
-                <TextBlock HorizontalAlignment="Center" Foreground="White" Margin="0,25,0,0"
-                       FontSize="28" FontWeight="Bold" Text="Create account"/>
+                <Label HorizontalAlignment="Center" Foreground="White" Margin="0,25,0,0"
+                       FontSize="28" FontWeight="Bold" Content="Create account"/>
 
                 <TextBox Foreground="White" HorizontalAlignment="Center" Margin="0,30,0,0"
                      Width="300" FontSize="16" BorderThickness="1"

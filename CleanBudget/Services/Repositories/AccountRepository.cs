@@ -3,6 +3,7 @@ using System.Linq;
 using CleanBudget.Models;
 using CleanBudget.Database;
 using System.Collections.Generic;
+using Microsoft.EntityFrameworkCore;
 
 namespace CleanBudget.Services.Repositories
 {
@@ -26,15 +27,15 @@ namespace CleanBudget.Services.Repositories
             }
         }
 
-        public ICollection<Account> GetAll()
+        public IEnumerable<Account> GetAll()
         {
             using (var db = new BudgetContext())
             {
-                return db.Accounts.ToList();
+                return db.Accounts.Include(a => a.User).ToList();
             }
         }
 
-        public Account GetById(string id)
+        public Account GetById(Guid id)
         {
             using (var db = new BudgetContext())
             {
@@ -50,7 +51,7 @@ namespace CleanBudget.Services.Repositories
 
                 if (account != null)
                 {
-                    db.Update(account);
+                    db.Accounts.Update(account);
                     db.SaveChangesAsync();
                 }
             }

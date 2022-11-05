@@ -1,11 +1,15 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace CleanBudget.Models
 {
-    [Table("Cards")]
-    public class Card
+    [Table("Categories")]
+    public class Category
     {
         public Guid Id { get; set; }
         [MaxLength(50)]
@@ -14,8 +18,6 @@ namespace CleanBudget.Models
         [MaxLength(50)]
         public string Currency { get; set; }
         [MaxLength(50)]
-        public string Description { get; set; }
-        [MaxLength(50)]
         public string Icon { get; set; }
         [MaxLength(50)]
         public string Color { get; set; }
@@ -23,13 +25,13 @@ namespace CleanBudget.Models
         public Guid? AccountId { get; set; }
         public virtual Account Account { get; set; }
 
-        public Card()
+        public Category()
         {
             Id = Guid.NewGuid();
             Queue = 0;
         }
 
-        public Card(string title, double balance, string currency, string description, string icon, string color, Account account) : this()
+        public Category(string title, double balance, string currency, string icon, string color, Account account) : this()
         {
             Icon = icon;
             Title = title;
@@ -37,7 +39,6 @@ namespace CleanBudget.Models
             Balance = balance;
             Account = account;
             Currency = currency;
-            Description = description;
             AccountId = account.Id;
         }
     }

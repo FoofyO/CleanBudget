@@ -8,18 +8,27 @@
 
     <Application.Resources>
         <ResourceDictionary>
+            <!--Library Resources-->
             <ResourceDictionary.MergedDictionaries>
-                <md:CustomColorTheme BaseTheme="Dark" PrimaryColor="DarkOrange" SecondaryColor="Lime" />
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Fonts.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Themes/Light.Blue.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Button.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Defaults.xaml" />
+                <md:CustomColorTheme BaseTheme="Dark" PrimaryColor="DarkOrange" SecondaryColor="Red"/>
             </ResourceDictionary.MergedDictionaries>
 
             <!--Colors-->
-            <SolidColorBrush x:Key="TitleBarPrimary" Color="#22272d" />
-            <SolidColorBrush x:Key="TitleBarSecondary" Color="#38404A" />
-            <SolidColorBrush x:Key="TitleBarClose" Color="#e81123" />
+            <SolidColorBrush x:Key="TitleBarPrimary" Color="#22272D" />
+            <SolidColorBrush x:Key="TitleBarSecondary" Color="#282b32" />
+            <SolidColorBrush x:Key="TitleBarThirdary" Color="#323b47" />
+            <SolidColorBrush x:Key="TitleBarClose" Color="#E81123" />
+            <SolidColorBrush x:Key="NavBarWhite" Color="#EFF4F0" />
+            <SolidColorBrush x:Key="NavBarOrange" Color="#e98000" />
+            <SolidColorBrush x:Key="NavBarDarkGray" Color="#676767" />
+            <SolidColorBrush x:Key="NavBarGray" Color="#8A8F95" />
 
-            <!--Data template-->
+            <!--Data Template-->
             <DataTemplate DataType="{x:Type vm:LoginViewModel}">
                 <v:LoginView/>
             </DataTemplate>
@@ -28,6 +37,9 @@
             </DataTemplate>
             <DataTemplate DataType="{x:Type vm:HomeViewModel}">
                 <v:HomeView/>
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type vm:AccountViewModel}">
+                <v:AccountView/>
             </DataTemplate>
 
             <!--Styles-->
@@ -56,7 +68,6 @@
                     </Setter.Value>
                 </Setter>
             </Style>
-
             <Style x:Key="TitleBarButtonClose" TargetType="{x:Type Button}">
                 <Setter Property="Width" Value="40"/>
                 <Setter Property="Foreground" Value="White"/>
@@ -80,6 +91,29 @@
                         </ControlTemplate>
                     </Setter.Value>
                 </Setter>
+            </Style>
+
+            <Style x:Key="NavBarItem" TargetType="StackPanel">
+                <Setter Property="VerticalAlignment" Value="Center"/>
+                <Setter Property="Background" Value="Transparent"/>
+                <Setter Property="Orientation" Value="Horizontal"/>
+                <Style.Triggers>
+                    <Trigger Property="IsMouseOver" Value="True">
+                        <Setter Property="Cursor" Value="Hand"/>
+                        <Setter Property="Background" Value="#326985"/>
+                    </Trigger>
+                </Style.Triggers>
+            </Style>
+            <Style x:Key="NavBarIcon" TargetType="md:PackIcon">
+                <Setter Property="Width" Value="40"/>
+                <Setter Property="Height" Value="40"/>
+                <Setter Property="Margin" Value="10"/>
+                <Setter Property="Foreground" Value="{StaticResource NavBarGray}"/>
+            </Style>
+            <Style x:Key="NavBarTitle" TargetType="Label">
+                <Setter Property="FontSize" Value="20"/>
+                <Setter Property="Foreground" Value="{StaticResource NavBarGray}"/>
+                <Setter Property="VerticalAlignment" Value="Center"/>
             </Style>
         </ResourceDictionary>
     </Application.Resources>

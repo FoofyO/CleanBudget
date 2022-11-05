@@ -30,15 +30,15 @@ namespace CleanBudget.Services.Repositories
             }
         }
 
-        public ICollection<User> GetAll()
+        public IEnumerable<User> GetAll()
         {
             using (var db = new BudgetContext())
             {
-                return db.Users.ToList();
+                return db.Users.Include(u => u.Account).ToList();
             }
         }
 
-        public User GetById(string id)
+        public User GetById(Guid id)
         {
             using (var db = new BudgetContext())
             {

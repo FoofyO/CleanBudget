@@ -8,25 +8,33 @@ namespace CleanBudget.Models
     public class User
     {
         public Guid Id { get; set; }
+        [MaxLength(25)]
         public string Firstname { get; set; }
+        [MaxLength(25)]
         public string Lastname { get; set; }
+        [MaxLength(39)]
         public string Email { get; set; }
+        [MaxLength(44)]
         public string Hash { get; set; }
+        [MaxLength(36)]
         public string Salt { get; set; }
+        public virtual Guid? AccountId { get; set; }
         public virtual Account Account { get; set; }
 
-        public User() { }
+        public User() => Id = Guid.NewGuid();
 
-        public User(string email, string firstname, string lastname, string hash, string salt)
+        public User(string email, string firstname, string lastname, string hash, string salt) : this()
         {
-            this.Id = Guid.NewGuid();
-            this.Email = email;
-            this.Firstname = firstname;
-            this.Lastname = lastname;
-            this.Hash = hash;
-            this.Salt = salt;
+            Email = email;
+            Firstname = firstname;
+            Lastname = lastname;
+            Hash = hash;
+            Salt = salt;
         }
 
-        public void SetAccount(Account account) => this.Account = account;
+        public void SetAccount(Account account)
+        {
+            AccountId = account.Id;
+        }
     }
 }

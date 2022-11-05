@@ -8,7 +8,6 @@ using System.Windows.Controls;
 using GalaSoft.MvvmLight.Command;
 using GalaSoft.MvvmLight.Messaging;
 using CleanBudget.Services.Repositories;
-using CleanBudget.Database;
 
 namespace CleanBudget.ViewModels
 {
@@ -16,9 +15,9 @@ namespace CleanBudget.ViewModels
     {
         #region Properties
         //Services
-        private IMessenger messenger;
-        private UserRepository userRepository;
-        private AccountRepository accountRepository;
+        private IMessenger _messenger;
+        private UserRepository _userRepository;
+        private AccountRepository _accountRepository;
 
         //Spinner
         public bool Checker { get; set; } = true;
@@ -35,6 +34,9 @@ namespace CleanBudget.ViewModels
         public string LastnameValidation { get; set; } = string.Empty;
         public string PasswordValidation { get; set; } = string.Empty;
 
+        //Account
+        public Account NewAccount { get; set; }
+
         //Commands
         public RelayCommand LoadCommand { get; set; } 
         public RelayCommand LoginCommand { get; set; }
@@ -44,9 +46,9 @@ namespace CleanBudget.ViewModels
 
         public RegisterViewModel(IMessenger messenger, UserRepository userRepository, AccountRepository accountRepository)
         {
-            this.messenger = messenger;
-            this.userRepository = userRepository;
-            this.accountRepository = accountRepository;
+            _messenger = messenger;
+            _userRepository = userRepository;
+            _accountRepository = accountRepository;
             LoadCommand = new RelayCommand(Loaded);
             LoginCommand = new RelayCommand(Login);
             RegisterCommand = new RelayCommand<PasswordBox>(Registration);
@@ -127,8 +129,8 @@ namespace CleanBudget.ViewModels
                 if (register)
                 {
                     PasswordValidation = Email = Firstname = Lastname = string.Empty;
-                    //messenger.Send<SendUserMessage>(new SendUserMessage { User = user });
-                    //messenger.Send<Navigation>(new Navigation { ViewModelType = typeof(LoginViewModel) });
+                    _messenger.Send<SendAccount>(new SendAccount { Account = NewAccount });
+                    _messenger.Send<Navigation>(new Navigation { ViewModelType = typeof(HomeViewModel) });
                 }
             }
         }
@@ -138,7 +140,7 @@ namespace CleanBudget.ViewModels
             bool flag = true;
             try
             {
-                if (userRepository.GetId(Email) == Guid.Empty)
+                if (_userRepository.GetId(Email) == Guid.Empty)
                 {
                     try
                     {
@@ -146,8 +148,11 @@ namespace CleanBudget.ViewModels
                         var user = new User(Email, Firstname, Lastname, crypt.Item1, crypt.Item2);
                         var account = new Account(user);
                         user.SetAccount(account);
-                        userRepository.Create(user);
-                        accountRepository.Create(account);
+                        _userRepository.Create(user);
+                        _accountRepository.Create(account);
+                        user.Account = account;
+                        account.User = user;
+                        NewAccount = account;
                     }
                     catch (Exception ex) { }
                 }
@@ -168,10 +173,10 @@ namespace CleanBudget.ViewModels
         public void Login()
         {
             Email = Firstname = Lastname = Password = EmailValidation = FirstnameValidation = LastnameValidation = PasswordValidation = string.Empty;
-            messenger.Send<Navigation>(new Navigation { ViewModelType = typeof(LoginViewModel) });
+            _messenger.Send<Navigation>(new Navigation { ViewModelType = typeof(LoginViewModel) });
         }
 
-        public void Loaded() => messenger.Send<Resize>(new Resize(700, 500, false));
+        public void Loaded() => _messenger.Send<Resize>(new Resize(700, 500, false));
         
         private void PasswordChanged(PasswordBox pwdbox) { if (pwdbox != null) Password = pwdbox.Password; }
 

@@ -3,9 +3,9 @@ using System.Windows.Controls;
 
 namespace CleanBudget.Views
 {
-    public partial class RegisterView : UserControl
+    public partial class AccountView : UserControl
     {
-        public RegisterView()
+        public AccountView()
         {
             InitializeComponent();
         }

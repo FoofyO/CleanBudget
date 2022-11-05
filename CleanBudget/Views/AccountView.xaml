@@ -1,0 +1,136 @@
+﻿<UserControl x:Class="CleanBudget.Views.AccountView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:i="http://schemas.microsoft.com/xaml/behaviors" 
+             xmlns:md="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:CleanBudget.Views"
+             xmlns:converter="clr-namespace:CleanBudget.Services"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+
+    <UserControl.Resources>
+        <converter:PasswordBoxConverter x:Key="pwdConverter"></converter:PasswordBoxConverter>
+    </UserControl.Resources>
+
+    <i:Interaction.Triggers>
+        <i:EventTrigger EventName="Loaded">
+            <i:InvokeCommandAction Command="{Binding LoadCommand}"/>
+        </i:EventTrigger>
+    </i:Interaction.Triggers>
+    <Grid>
+        <md:Card UniformCornerRadius="8" Margin="25" 
+             md:ShadowAssist.ShadowDepth="Depth2"
+             Background="{DynamicResource MaterialDesignPaper}">
+            <StackPanel HorizontalAlignment="Left" Margin="40,10,0,0">
+                <StackPanel Orientation="Horizontal">
+                    <StackPanel HorizontalAlignment="Left" Margin="0,0,150,0">
+                        <Label Foreground="White" FontSize="24" 
+                       FontWeight="Bold" Content="Account information"/>
+                        <TextBox Foreground="White" Margin="0,10,0,0"
+                     Width="350" FontSize="16" BorderThickness="1" Text="{Binding Email}"
+                     HorizontalAlignment="Left"
+                     md:HintAssist.Hint="Email" IsReadOnly="True"
+                     BorderBrush="{DynamicResource MaterialDesignDivider}"
+                     Style="{StaticResource MaterialDesignOutlinedTextBox}"/>
+                    </StackPanel>
+                    <StackPanel VerticalAlignment="Center" HorizontalAlignment="Right">
+                        <Button Content="Log out" FontSize="16" 
+                                HorizontalAlignment="Center"
+                                Command="{Binding LogoutCommand}"
+                                Height="50" Width="150" Margin="0,30,0,0" 
+                                Foreground="White" Background="Purple"
+                                Style="{StaticResource MaterialDesignFlatButton}" 
+                                md:ShadowAssist.ShadowDepth="Depth0" 
+                                md:ButtonAssist.CornerRadius="8" Cursor="Hand">
+                        </Button>
+                    </StackPanel>
+                </StackPanel>
+                
+                <StackPanel Orientation="Horizontal" Margin="0,30,0,0">
+                    <StackPanel HorizontalAlignment="Left" Margin="0,0,30,0">
+                        <Label Foreground="White" FontSize="24" 
+                           FontWeight="Bold" Content="Edit Full Name"/>
+
+                        <TextBox Foreground="White" Margin="0,15,0,0"
+                                 Width="300" FontSize="16" BorderThickness="1" Text="{Binding Firstname}"
+                                 HorizontalAlignment="Left"
+                                 md:HintAssist.Hint="First Name"
+                                 BorderBrush="{DynamicResource MaterialDesignDivider}"
+                                 Style="{StaticResource MaterialDesignOutlinedTextBox}"/>
+
+                        <TextBox Foreground="White" Margin="0,15,0,0"
+                                 Width="300" FontSize="16" BorderThickness="1" Text="{Binding Lastname}"
+                                 HorizontalAlignment="Left"
+                                 md:HintAssist.Hint="Last Name"
+                                 BorderBrush="{DynamicResource MaterialDesignDivider}"
+                                 Style="{StaticResource MaterialDesignOutlinedTextBox}"/>
+
+                        <Label FontSize="14" Foreground="Red" 
+                               HorizontalAlignment="Center" 
+                               Margin="0,5,0,-20"
+                               Content="{Binding FullnameValidation}"/>
+                        
+                        <Button Content="Update" FontSize="16" 
+                                HorizontalAlignment="Center"
+                                Command="{Binding ChangeFullnameCommand}"
+                                Height="50" Width="150" Margin="0,30,0,0" 
+                                Style="{StaticResource MaterialDesignFlatMidBgButton}" 
+                                md:ShadowAssist.ShadowDepth="Depth0" 
+                                md:ButtonAssist.CornerRadius="8" Cursor="Hand">
+                        </Button>
+                    </StackPanel>
+                    <StackPanel HorizontalAlignment="Right">
+                        <Label Foreground="White" FontSize="24" 
+                           FontWeight="Bold" Content="Change password"/>
+
+                        <PasswordBox Foreground="White" Margin="0,15,0,0" Width="350" FontSize="16" 
+                             HorizontalAlignment="Center" Name="OldPasswordBox"
+                             md:HintAssist.Hint="Old Password" BorderThickness="2" 
+                             BorderBrush="{DynamicResource MaterialDesignDivider}" 
+                             Style="{StaticResource MaterialDesignOutlinedPasswordBox}">
+                            <i:Interaction.Triggers>
+                                <i:EventTrigger EventName="PasswordChanged">
+                                    <i:InvokeCommandAction Command="{Binding OldPasswordChangedCommand}" CommandParameter="{Binding ElementName=OldPasswordBox}"/>
+                                </i:EventTrigger>
+                            </i:Interaction.Triggers>
+                        </PasswordBox>
+
+                        <PasswordBox Foreground="White" Margin="0,15,0,0" Width="350" FontSize="16" 
+                             HorizontalAlignment="Center" Name="NewPasswordBox"
+                             md:HintAssist.Hint="New Password" BorderThickness="2" 
+                             BorderBrush="{DynamicResource MaterialDesignDivider}" 
+                             Style="{StaticResource MaterialDesignOutlinedPasswordBox}">
+                            <i:Interaction.Triggers>
+                                <i:EventTrigger EventName="PasswordChanged">
+                                    <i:InvokeCommandAction Command="{Binding NewPasswordChangedCommand}" CommandParameter="{Binding ElementName=NewPasswordBox}"/>
+                                </i:EventTrigger>
+                            </i:Interaction.Triggers>
+                        </PasswordBox>
+
+                        <Label FontSize="14" Foreground="Red" 
+                               HorizontalAlignment="Center" 
+                               Margin="0,5,0,-20"
+                               Content="{Binding PasswordValidation}"/>
+
+                        <Button Content="Change" FontSize="16" 
+                                HorizontalAlignment="Center"
+                                Command="{Binding ChangePasswordCommand}"
+                                Height="50" Width="150" Margin="0,30,0,0" 
+                                Style="{StaticResource MaterialDesignFlatMidBgButton}" 
+                                md:ShadowAssist.ShadowDepth="Depth0" 
+                                md:ButtonAssist.CornerRadius="8" Cursor="Hand">
+                                <Button.CommandParameter>
+                                    <MultiBinding Converter="{StaticResource pwdConverter}">
+                                        <Binding ElementName="OldPasswordBox"/>
+                                        <Binding ElementName="NewPasswordBox"/>
+                                    </MultiBinding>
+                                </Button.CommandParameter>
+                        </Button>
+                    </StackPanel>
+                </StackPanel>
+            </StackPanel>
+        </md:Card>
+    </Grid>
+</UserControl>

@@ -1,5 +1,5 @@
 ﻿using System;
-using System.ComponentModel.DataAnnotations;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace CleanBudget.Models
@@ -10,13 +10,19 @@ namespace CleanBudget.Models
         public Guid  Id { get; set; }
         public Guid? UserId { get; set; }
         public virtual User User { get; set; }
+        public virtual List<Card> Cards { get; set; }
+        public virtual List<Category> Categories { get; set; }
 
-        public Account() => this.Id = Guid.NewGuid();
+        public Account()
+        {
+            Id = Guid.NewGuid();
+            Cards = new List<Card>();
+            Categories = new List<Category>();
+        }
 
         public Account(User user) : this()
         {
-            this.User = user;
-            this.UserId = user.Id;
+            UserId = user.Id;
         }
     }
 }

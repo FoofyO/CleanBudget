@@ -2,7 +2,6 @@
 using CleanBudget.Models;
 using System.Configuration;
 using Microsoft.EntityFrameworkCore;
-using CleanBudget.Models.Configurations;
 
 namespace CleanBudget.Database
 {
@@ -21,12 +20,16 @@ namespace CleanBudget.Database
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.ApplyConfiguration(new AccountConfiguration());
-            modelBuilder.ApplyConfiguration(new UserConfiguration());
-            base.OnModelCreating(modelBuilder);
+            modelBuilder.Entity<User>()
+                        .HasOne(u => u.Account)
+                        .WithOne(a => a.User)
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .HasForeignKey<Account>(a => a.UserId);
         }
 
+        public DbSet<Card> Cards { get; set; }
         public DbSet<User> Users { get; set; }
         public DbSet<Account> Accounts { get; set; }
+        public DbSet<Category> Categories { get; set; }
     }
 }

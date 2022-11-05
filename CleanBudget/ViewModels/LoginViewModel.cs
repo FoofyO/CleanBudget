@@ -7,6 +7,7 @@ using System.Windows.Controls;
 using GalaSoft.MvvmLight.Command;
 using GalaSoft.MvvmLight.Messaging;
 using CleanBudget.Services.Repositories;
+using CleanBudget.Models;
 
 namespace CleanBudget.ViewModels
 {
@@ -14,8 +15,8 @@ namespace CleanBudget.ViewModels
     {
         #region Properties
         //Services
-        private IMessenger messenger;
-        private UserRepository repository;
+        private IMessenger _messenger;
+        private UserRepository _repository;
 
         //Spinner
         public bool Checker { get; set; } = true;
@@ -37,8 +38,8 @@ namespace CleanBudget.ViewModels
 
         public LoginViewModel(IMessenger messenger, UserRepository repository)
         {
-            this.messenger = messenger;
-            this.repository = repository;
+            _messenger = messenger;
+            _repository = repository;
             LoadCommand = new RelayCommand(Loaded);
             RegisterCommand = new RelayCommand(Registration);
             LoginCommand = new RelayCommand<PasswordBox>(Login);
@@ -89,51 +90,45 @@ namespace CleanBudget.ViewModels
             {
                 IsSpin = true;
                 IsVisible = "Visible";
-                var login = await Task.Run<bool>(() => TryLogin(pwdbox));
-                if (login)
+                var account = await Task.Run<Account>(() => TryLogin(pwdbox));
+                if (account != null)
                 {
                     PasswordValidation = Email = string.Empty;
-                    //messenger.Send<SendUserMessage>(new SendUserMessage { User = user });
-                    //messenger.Send<Navigation>(new Navigation { ViewModelType = typeof(LoginViewModel) });
+                    _messenger.Send<SendAccount>(new SendAccount { Account = account });
+                    _messenger.Send<Navigation>(new Navigation { ViewModelType = typeof(HomeViewModel) });
                 }
             }
         }
 
-        public Task<bool> TryLogin(PasswordBox pwdbox)
+        public Task<Account> TryLogin(PasswordBox pwdbox)
         {
-            bool flag = true;
+            Account account = null;
             try
             {
-                var id = repository.GetId(Email);
+                var id = _repository.GetId(Email);
                 if (id != Guid.Empty)
                 {
-                    if (repository.Login(id, Password) == null)
-                    {
-                        flag = false;
-                        PasswordValidation = "* Invalid email address or password";
-                    }
+                    var user = _repository.Login(id, Password);
+                    if (user == null) PasswordValidation = "* Invalid email address or password";
+                    else account = user.Account;
                 }
-                else
-                {
-                    flag = false;
-                    PasswordValidation = "* Invalid email address or password";
-                }
+                else PasswordValidation = "* Invalid email address or password";
             }
             catch (Exception ex) { }
 
             IsSpin = false;
             IsVisible = "Hidden";
             PasswordClear(pwdbox);
-            return Task.FromResult(flag);
+            return Task.FromResult(account);
         }
 
         public void Registration()
         {
             Email = EmailValidation = PasswordValidation = string.Empty;
-            messenger.Send<Navigation>(new Navigation { ViewModelType = typeof(RegisterViewModel) });
+            _messenger.Send<Navigation>(new Navigation { ViewModelType = typeof(RegisterViewModel) });
         }
 
-        public void Loaded() => messenger.Send<Resize>(new Resize(530, 450, false));
+        public void Loaded() => _messenger.Send<Resize>(new Resize(530, 450, false));
 
         private void PasswordChanged(PasswordBox pwdbox) { if (pwdbox != null) Password = pwdbox.Password; }
         
