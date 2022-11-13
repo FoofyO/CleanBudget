@@ -18,7 +18,7 @@
         </i:EventTrigger>
     </i:Interaction.Triggers>
     <Grid>
-        <md:Card UniformCornerRadius="8" Margin="25" Panel.ZIndex="1" 
+        <md:Card UniformCornerRadius="8" Margin="25" Panel.ZIndex="-1" 
              md:ShadowAssist.ShadowDepth="Depth2" Visibility="{Binding IsVisible}"
              Background="{DynamicResource MaterialDesignPaper}">
             <fa:ImageAwesome Foreground="White" Icon="Spinner" Spin="{Binding IsSpin}" Height="70" Width="70" SpinDuration="1.5"/>
@@ -31,7 +31,7 @@
                        FontSize="28" FontWeight="Bold" Content="Create account"/>
 
                 <TextBox Foreground="White" HorizontalAlignment="Center" Margin="0,30,0,0"
-                     Width="300" FontSize="16" BorderThickness="1"
+                     Width="300" FontSize="16" BorderThickness="1" MaxLength="39"
                      md:HintAssist.Hint="Enter Email" Text="{Binding Email}"
                      BorderBrush="{DynamicResource MaterialDesignDivider}" 
                      Style="{StaticResource MaterialDesignOutlinedTextBox}"/>
@@ -42,7 +42,7 @@
                    Content="{Binding EmailValidation}"/>
 
                 <TextBox Foreground="White" HorizontalAlignment="Center" Margin="0,30,0,0"
-                     Width="300" FontSize="16" BorderThickness="1"
+                     Width="300" FontSize="16" BorderThickness="1" MaxLength="25"
                      md:HintAssist.Hint="Enter First name" Text="{Binding Firstname}"
                      BorderBrush="{DynamicResource MaterialDesignDivider}" 
                      Style="{StaticResource MaterialDesignOutlinedTextBox}"/>
@@ -53,7 +53,7 @@
                    Content="{Binding FirstnameValidation}"/>
 
                 <TextBox Foreground="White" HorizontalAlignment="Center" Margin="0,30,0,0"
-                     Width="300" FontSize="16" BorderThickness="1"
+                     Width="300" FontSize="16" BorderThickness="1" MaxLength="25"
                      md:HintAssist.Hint="Enter Last name" Text="{Binding Lastname}"
                      BorderBrush="{DynamicResource MaterialDesignDivider}" 
                      Style="{StaticResource MaterialDesignOutlinedTextBox}"/>
@@ -64,7 +64,7 @@
                    Content="{Binding LastnameValidation}"/>
 
                 <PasswordBox Foreground="White" Margin="0,30,0,0" Width="300" FontSize="16" 
-                         HorizontalAlignment="Center" Name="PasswordBox"
+                         HorizontalAlignment="Center" Name="PasswordBox" MaxLength="20"
                          md:HintAssist.Hint="Enter Password" BorderThickness="2" 
                          BorderBrush="{DynamicResource MaterialDesignDivider}" 
                          Style="{StaticResource MaterialDesignOutlinedPasswordBox}">

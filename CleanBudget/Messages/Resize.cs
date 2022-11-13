@@ -9,6 +9,8 @@ namespace CleanBudget.Messages
         public double Width { get; set; }
         public bool CanResize { get; set; }
 
+        public Resize() { }
+
         public Resize(double height, double width, bool canResize)
         {
             this.Height = height;

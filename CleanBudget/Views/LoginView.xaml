@@ -30,7 +30,7 @@
 
                 <TextBox Foreground="White" HorizontalAlignment="Center" Margin="0,30,0,0"
                      Width="300" FontSize="16" BorderThickness="1" Text="{Binding Email}"
-                     md:HintAssist.Hint="Enter Email" 
+                     md:HintAssist.Hint="Enter Email" MaxLength="39"
                      BorderBrush="{DynamicResource MaterialDesignDivider}"
                      Style="{StaticResource MaterialDesignOutlinedTextBox}"/>
 
@@ -40,7 +40,7 @@
                    Content="{Binding EmailValidation}"/>
 
                 <PasswordBox Foreground="White" Margin="0,30,0,0" Width="300" FontSize="16" 
-                         HorizontalAlignment="Center" Name="PasswordBox"
+                         HorizontalAlignment="Center" Name="PasswordBox" MaxLength="20"
                          md:HintAssist.Hint="Enter Password" BorderThickness="2" 
                          BorderBrush="{DynamicResource MaterialDesignDivider}" 
                          Style="{StaticResource MaterialDesignOutlinedPasswordBox}">

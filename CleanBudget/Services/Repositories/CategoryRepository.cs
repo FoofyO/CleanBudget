@@ -38,7 +38,7 @@ namespace CleanBudget.Services.Repositories
         {
             using (var db = new BudgetContext())
             {
-                return GetAll().FirstOrDefault(u => u.Id.Equals(id));
+                return db.Categories.FirstOrDefault(u => u.Id.Equals(id));
             }
         }
 
@@ -46,7 +46,7 @@ namespace CleanBudget.Services.Repositories
         {
             using (var db = new BudgetContext())
             {
-                Category category = GetAll().FirstOrDefault(a => a.Id.Equals(item.Id));
+                Category category = db.Categories.FirstOrDefault(a => a.Id.Equals(item.Id));
 
                 if (category != null)
                 {
@@ -60,7 +60,7 @@ namespace CleanBudget.Services.Repositories
         {
             using (var db = new BudgetContext())
             {
-                var category = GetAll().FirstOrDefault(c => c.Id.Equals(id));
+                var category = db.Categories.FirstOrDefault(c => c.Id.Equals(id));
 
                 if (category != null)
                 {
@@ -75,7 +75,7 @@ namespace CleanBudget.Services.Repositories
         {
             using (var db = new BudgetContext())
             {
-                var category = GetAll().FirstOrDefault(c => c.Id.Equals(id));
+                var category = db.Categories.FirstOrDefault(c => c.Id.Equals(id));
 
                 if (category != null)
                 {

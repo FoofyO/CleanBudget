@@ -24,5 +24,11 @@ namespace CleanBudget.Services
             Regex = new Regex(@"^([A-Z]){1}([a-z]){2,24}$");
             return Regex.IsMatch(value);
         }
+
+        public static bool IsTitleValid(string value)
+        {
+            Regex = new Regex(@"^([A-Z]|[a-z]|[0-9]|[ ]|[-]|[_]){3,20}$");
+            return Regex.IsMatch(value);
+        }
     }
 }

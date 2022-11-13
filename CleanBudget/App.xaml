@@ -3,6 +3,7 @@
             xmlns:v="clr-namespace:CleanBudget.Views"
             xmlns:vm="clr-namespace:CleanBudget.ViewModels"
             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+            xmlns:converter="clr-namespace:CleanBudget.Views.Converters"
             xmlns:md="http://materialdesigninxaml.net/winfx/xaml/themes"
             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
 
@@ -27,6 +28,7 @@
             <SolidColorBrush x:Key="NavBarOrange" Color="#e98000" />
             <SolidColorBrush x:Key="NavBarDarkGray" Color="#676767" />
             <SolidColorBrush x:Key="NavBarGray" Color="#8A8F95" />
+            <SolidColorBrush x:Key="MoneyGreen" Color="#259779" />
 
             <!--Data Template-->
             <DataTemplate DataType="{x:Type vm:LoginViewModel}">
@@ -41,6 +43,16 @@
             <DataTemplate DataType="{x:Type vm:AccountViewModel}">
                 <v:AccountView/>
             </DataTemplate>
+            <DataTemplate DataType="{x:Type vm:CardsViewModel}">
+                <v:CardsView/>
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type vm:AddCardViewModel}">
+                <v:AddCardView/>
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type vm:EditCardViewModel}">
+                <v:EditCardView/>
+            </DataTemplate>
+
 
             <!--Styles-->
             <Style x:Key="TitleBarButtonNormal" TargetType="{x:Type Button}">
@@ -115,6 +127,10 @@
                 <Setter Property="Foreground" Value="{StaticResource NavBarGray}"/>
                 <Setter Property="VerticalAlignment" Value="Center"/>
             </Style>
+            
+            <!--Converters-->
+            <converter:BalanceConverter x:Key="BalanceConverter"/>
+            <converter:PasswordBoxConverter x:Key="PasswordBoxConverter"/>
         </ResourceDictionary>
     </Application.Resources>
 </Application>

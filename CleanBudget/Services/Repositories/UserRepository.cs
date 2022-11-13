@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Text;
 using System.Linq;
-using System.Xml.Linq;
 using CleanBudget.Models;
 using CleanBudget.Database;
 using System.Collections.Generic;
 using System.Security.Cryptography;
 using Microsoft.EntityFrameworkCore;
+using System.Windows;
 
 namespace CleanBudget.Services.Repositories
 {
@@ -16,7 +16,7 @@ namespace CleanBudget.Services.Repositories
         {
             using (var db = new BudgetContext())
             {
-                db.Users.Add(item);
+                db.Users.Add(item).ToString();
                 db.SaveChanges();
             }
         }
@@ -42,7 +42,7 @@ namespace CleanBudget.Services.Repositories
         {
             using (var db = new BudgetContext())
             {
-                return GetAll().FirstOrDefault(u => u.Id.Equals(id));
+                return db.Users.Include(u => u.Account).FirstOrDefault(u => u.Id.Equals(id));
             }
         }
 
@@ -50,7 +50,7 @@ namespace CleanBudget.Services.Repositories
         {
             using (var db = new BudgetContext())
             {
-                var user = GetAll().FirstOrDefault(u => u.Id.Equals(item.Id));
+                var user = db.Users.FirstOrDefault(u => u.Id.Equals(item.Id));
 
                 if (user != null)
                 {
@@ -69,9 +69,20 @@ namespace CleanBudget.Services.Repositories
         {
             using (var db = new BudgetContext())
             {
-                var result = GetAll().FirstOrDefault(u => u.Email.Equals(email));
+                var result = db.Users.FirstOrDefault(u => u.Email.Equals(email));
                 if (result == null) return Guid.Empty;
                 return result.Id;
+            }
+        }
+
+        public User GetByAccountId(Guid id)
+        {
+            using (var db = new BudgetContext())
+            {
+                var res = db.Users.ToList();
+                var result = db.Users.Include(u => u.Account).FirstOrDefault(u => u.AccountId.Equals(id));
+                if (result == null) return null;
+                return result;
             }
         }
 
@@ -79,7 +90,7 @@ namespace CleanBudget.Services.Repositories
         {
             using (var db = new BudgetContext())
             {
-                var user = GetAll().FirstOrDefault(u => u.Id.Equals(id));
+                var user = db.Users.Include(u => u.Account).FirstOrDefault(u => u.Id.Equals(id));
                 if (user != null)
                 {
                     if (Decrypt(password, user.Salt).Equals(user.Hash))

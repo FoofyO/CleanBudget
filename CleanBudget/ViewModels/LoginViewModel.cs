@@ -13,7 +13,7 @@ namespace CleanBudget.ViewModels
 {
     public class LoginViewModel : BaseViewModel
     {
-        #region Properties
+        #region Variables
         //Services
         private IMessenger _messenger;
         private UserRepository _repository;
@@ -46,7 +46,7 @@ namespace CleanBudget.ViewModels
             PasswordChangedCommand = new RelayCommand<PasswordBox>(PasswordChanged);
         }
 
-        public async void Login(PasswordBox pwdbox)
+        private async void Login(PasswordBox pwdbox)
         {
             Checker = true;
 
@@ -54,7 +54,7 @@ namespace CleanBudget.ViewModels
             if (Email == string.Empty)
             {
                 Checker = false;
-                EmailValidation = "* Fill Email field";
+                EmailValidation = "* Fill Email Field";
             }
             else if (!ValidatorExtensions.IsEmailValid(Email))
             {
@@ -67,22 +67,22 @@ namespace CleanBudget.ViewModels
             if (Password == string.Empty)
             {
                 Checker = false;
-                PasswordValidation = "* Fill Password field";
+                PasswordValidation = "* Fill Password Field";
             }
             else if (Password.Length < 8)
             {
                 Checker = false;
-                PasswordValidation = "* The password is too short";
+                PasswordValidation = "* Password Is Too Short";
             }
             else if (Password.Length > 20)
             {
                 Checker = false;
-                PasswordValidation = "* The password is too long";
+                PasswordValidation = "* Password Is Too Long";
             }
             else if (!ValidatorExtensions.IsPasswordValid(Password))
             {
                 Checker = false;
-                PasswordValidation = "* The password is very easy";
+                PasswordValidation = "* Password Is Very Easy";
             }
             else PasswordValidation = string.Empty;
 
@@ -94,13 +94,13 @@ namespace CleanBudget.ViewModels
                 if (account != null)
                 {
                     PasswordValidation = Email = string.Empty;
-                    _messenger.Send<SendAccount>(new SendAccount { Account = account });
-                    _messenger.Send<Navigation>(new Navigation { ViewModelType = typeof(HomeViewModel) });
+                    _messenger.Send(new SendAccount(account.Id));
+                    _messenger.Send(new Navigation(typeof(HomeViewModel)));
                 }
             }
         }
 
-        public Task<Account> TryLogin(PasswordBox pwdbox)
+        private Task<Account> TryLogin(PasswordBox pwdbox)
         {
             Account account = null;
             try
@@ -109,10 +109,10 @@ namespace CleanBudget.ViewModels
                 if (id != Guid.Empty)
                 {
                     var user = _repository.Login(id, Password);
-                    if (user == null) PasswordValidation = "* Invalid email address or password";
+                    if (user == null) PasswordValidation = "* Invalid Email Address Or Password";
                     else account = user.Account;
                 }
-                else PasswordValidation = "* Invalid email address or password";
+                else PasswordValidation = "* Invalid Email Address Or Password";
             }
             catch (Exception ex) { }
 
@@ -122,13 +122,13 @@ namespace CleanBudget.ViewModels
             return Task.FromResult(account);
         }
 
-        public void Registration()
+        private void Registration()
         {
             Email = EmailValidation = PasswordValidation = string.Empty;
-            _messenger.Send<Navigation>(new Navigation { ViewModelType = typeof(RegisterViewModel) });
+            _messenger.Send<Navigation>(new Navigation(typeof(RegisterViewModel)));
         }
 
-        public void Loaded() => _messenger.Send<Resize>(new Resize(530, 450, false));
+        private void Loaded() => _messenger.Send(new Resize(530, 450, false));
 
         private void PasswordChanged(PasswordBox pwdbox) { if (pwdbox != null) Password = pwdbox.Password; }
         

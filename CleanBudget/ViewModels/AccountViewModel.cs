@@ -7,20 +7,27 @@ using System.Threading.Tasks;
 using System.Windows.Controls;
 using GalaSoft.MvvmLight.Command;
 using GalaSoft.MvvmLight.Messaging;
-using System.Collections.Generic;
 using CleanBudget.Services.Repositories;
-using Microsoft.EntityFrameworkCore.Migrations.Operations;
-using System.Reflection.Metadata;
-using System.Data.Common;
+using System.Collections.Generic;
+using MaterialDesignThemes.Wpf;
 
 namespace CleanBudget.ViewModels
 {
     public class AccountViewModel : BaseViewModel
     {
-        #region Properties
+        #region Variables
         //Service
         private IMessenger _messenger;
         private UserRepository _userRepository;
+        private AccountRepository _accountRepository;
+        private CurrencyRepository _currencyRepository;
+
+        //Model
+        public Account CurrentAccount { get; set; } = null;
+        public Currency PrevCurrency { get; set; } = null;
+        public Currency CurrentCurrency { get; set; } = null;
+        public Guid CurrentAccountId { get; set; } = Guid.Empty;
+        public List<Currency> Currencies { get; set; } = new List<Currency>();
 
         //Form
         public string Email { get; set; } = string.Empty;
@@ -30,36 +37,69 @@ namespace CleanBudget.ViewModels
         public string PrevLastname { get; set; } = string.Empty;
         public string NewPassword { get; set; } = string.Empty;
         public string OldPassword { get; set; } = string.Empty;
-        public bool Checker { get; set; } = true;
         public string FullnameValidation { get; set; } = string.Empty;
         public string PasswordValidation { get; set; } = string.Empty;
-        public Account? CurrentAccount { get; set; } = null;
+        public bool Checker { get; set; } = true;
 
         //Commands
         public RelayCommand LoadCommand { get; set; }
-        public RelayCommand ChangeFullnameCommand { get; set; }
         public RelayCommand LogoutCommand { get; set; }
+        public RelayCommand ChangeFullnameCommand { get; set; }
+        public RelayCommand ChangeCurrencyCommand { get; set; }
         public RelayCommand<object> ChangePasswordCommand { get; set; }
         public RelayCommand<PasswordBox> NewPasswordChangedCommand { get; set; }
         public RelayCommand<PasswordBox> OldPasswordChangedCommand { get; set; }
         #endregion
 
-        public AccountViewModel(IMessenger messenger, UserRepository userRepository)
+        public AccountViewModel(IMessenger messenger, UserRepository userRepository, AccountRepository accountRepository, CurrencyRepository currencyRepository)
         {
             _messenger = messenger;
             _userRepository = userRepository;
+            _accountRepository = accountRepository;
+            _currencyRepository = currencyRepository;
             _messenger.Register<SendAccount>(this, ReceiveAccount, true);
+
+            LoadCommand = new RelayCommand(Loaded);
             LogoutCommand = new RelayCommand(Logout);
-            ChangePasswordCommand = new RelayCommand<object>(ChangePassword);
+            ChangeCurrencyCommand = new RelayCommand(ChangeCurrency);
             ChangeFullnameCommand = new RelayCommand(ChangeFullName);
+            ChangePasswordCommand = new RelayCommand<object>(ChangePassword);
             OldPasswordChangedCommand = new RelayCommand<PasswordBox>(OldPasswordChanged);
             NewPasswordChangedCommand = new RelayCommand<PasswordBox>(NewPasswordChanged);
         }
 
+        private void Loaded() => Task.Run(() =>
+        {
+            if (CurrentAccount == null)
+            {
+                Currencies = (List<Currency>)_currencyRepository.GetAll();
+                CurrentAccount = _accountRepository.GetById(CurrentAccountId);
+                Email = CurrentAccount.User.Email;
+                PrevFirstname = Firstname = CurrentAccount.User.Firstname;
+                PrevLastname = Lastname = CurrentAccount.User.Lastname;
+                PrevCurrency = CurrentCurrency = Currencies[Currencies.FindIndex(c => c.Id == CurrentAccount.CurrencyId)];
+            }
+        });
+        
         private void Logout()
         {
-            CurrentAccount = null;
-            _messenger.Send<Navigation>(new Navigation() { ViewModelType = typeof(LoginViewModel) });
+            if (Currencies.Count != 0 && CurrentAccount != null)
+            {
+                Currencies.Clear();
+                CurrentAccount = null;
+                CurrentAccountId = Guid.Empty;
+                PrevCurrency = CurrentCurrency = null;
+                _messenger.Send(new Navigation(typeof(LoginViewModel)));
+            }
+        }
+
+        private void ChangeCurrency()
+        {
+            if (PrevCurrency != CurrentCurrency)
+            {
+                PrevCurrency = CurrentCurrency;
+                Task.Run(() => _accountRepository.UpdateCurrency(CurrentAccountId, CurrentCurrency));
+            }
         }
 
         private async void ChangeFullName()
@@ -98,9 +138,11 @@ namespace CleanBudget.ViewModels
                     PrevLastname = Lastname;
                 }
             }
-            catch (Exception ex) { }
+            catch (Exception) { }
             FullnameValidation = string.Empty;
         }
+        
+        private void ReceiveAccount(SendAccount obj) => CurrentAccountId = obj.AccountId;
 
         private async void ChangePassword(object paramaters)
         {
@@ -124,7 +166,7 @@ namespace CleanBudget.ViewModels
                 var param = (Tuple<object, object>)paramaters;
                 var param1 = (PasswordBox)param.Item1;
                 var param2 = (PasswordBox)param.Item2;
-                var transaction = await Task.Run<bool>(() => TryChangePassword(param1, param2));
+                var transaction = await Task.Run(() => TryChangePassword(param1, param2));
                 if (transaction) PasswordValidation = string.Empty;
             }
         }
@@ -151,18 +193,11 @@ namespace CleanBudget.ViewModels
                     }
                 }
             }
-            catch (Exception ex) { }
+            catch (Exception) { }
             PasswordClear(oldpwdbox, newpwdbox);
             return Task.FromResult(flag);
         }
 
-        private void ReceiveAccount(SendAccount obj)
-        {
-            CurrentAccount = obj.Account;
-            Email = CurrentAccount.User.Email;
-            PrevFirstname = Firstname = CurrentAccount.User.Firstname;
-            PrevLastname = Lastname = CurrentAccount.User.Lastname;
-        }
         private void OldPasswordChanged(PasswordBox pwdbox) { if (pwdbox != null) OldPassword = pwdbox.Password; }
         private void NewPasswordChanged(PasswordBox pwdbox) { if (pwdbox != null) NewPassword = pwdbox.Password; }
         private void PasswordClear(PasswordBox oldpwdbox, PasswordBox newpwdbox) => Application.Current.Dispatcher.Invoke(() => oldpwdbox.Password = newpwdbox.Password = string.Empty);

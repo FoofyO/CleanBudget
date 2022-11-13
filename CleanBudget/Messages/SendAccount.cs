@@ -6,6 +6,10 @@ namespace CleanBudget.Messages
 {
     public class SendAccount : Messenger
     {
-        public Account Account { get; set; }
+        public Guid AccountId { get; set; }
+
+        public SendAccount() { }
+
+        public SendAccount(Guid accountId) => AccountId = accountId;
     }
 }

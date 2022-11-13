@@ -13,11 +13,12 @@ namespace CleanBudget.ViewModels
 {
     public class RegisterViewModel : BaseViewModel
     {
-        #region Properties
+        #region Variables
         //Services
         private IMessenger _messenger;
         private UserRepository _userRepository;
         private AccountRepository _accountRepository;
+        private CurrencyRepository _currencyRepository;
 
         //Spinner
         public bool Checker { get; set; } = true;
@@ -35,7 +36,7 @@ namespace CleanBudget.ViewModels
         public string PasswordValidation { get; set; } = string.Empty;
 
         //Account
-        public Account NewAccount { get; set; }
+        public Guid NewAccountId { get; set; }
 
         //Commands
         public RelayCommand LoadCommand { get; set; } 
@@ -44,18 +45,19 @@ namespace CleanBudget.ViewModels
         public RelayCommand<PasswordBox> PasswordChangedCommand { get; set; }
         #endregion
 
-        public RegisterViewModel(IMessenger messenger, UserRepository userRepository, AccountRepository accountRepository)
+        public RegisterViewModel(IMessenger messenger, UserRepository userRepository, AccountRepository accountRepository, CurrencyRepository currencyRepository)
         {
             _messenger = messenger;
             _userRepository = userRepository;
             _accountRepository = accountRepository;
+            _currencyRepository = currencyRepository;
             LoadCommand = new RelayCommand(Loaded);
             LoginCommand = new RelayCommand(Login);
             RegisterCommand = new RelayCommand<PasswordBox>(Registration);
             PasswordChangedCommand = new RelayCommand<PasswordBox>(PasswordChanged);
         }
-        
-        public async void Registration(PasswordBox pwdbox)
+
+        private async void Registration(PasswordBox pwdbox)
         {
             Checker = true;
 
@@ -63,7 +65,7 @@ namespace CleanBudget.ViewModels
             if (Email == string.Empty)
             {
                 Checker = false;
-                EmailValidation = "* Fill Email field";
+                EmailValidation = "* Fill Email Field";
             }
             else if (!ValidatorExtensions.IsEmailValid(Email))
             {
@@ -76,12 +78,12 @@ namespace CleanBudget.ViewModels
             if (Firstname == string.Empty)
             {
                 Checker = false;
-                FirstnameValidation = "* Fill First name field";
+                FirstnameValidation = "* Fill First Name Field";
             }
             else if (!ValidatorExtensions.IsNameValid(Firstname))
             {
                 Checker = false;
-                FirstnameValidation = "* Invalid First name";
+                FirstnameValidation = "* Invalid First Name";
             }
             else FirstnameValidation = string.Empty;
 
@@ -89,12 +91,12 @@ namespace CleanBudget.ViewModels
             if (Lastname == string.Empty)
             {
                 Checker = false;
-                LastnameValidation = "* Fill Last name field";
+                LastnameValidation = "* Fill Last Name Field";
             }
             else if (!ValidatorExtensions.IsNameValid(Lastname))
             {
                 Checker = false;
-                LastnameValidation = "* Invalid Last name";
+                LastnameValidation = "* Invalid Last Name";
             }
             else LastnameValidation = string.Empty;
 
@@ -102,22 +104,22 @@ namespace CleanBudget.ViewModels
             if (Password == string.Empty)
             {
                 Checker = false;
-                PasswordValidation = "* Fill Password field";
+                PasswordValidation = "* Fill Password Field";
             }
             else if (Password.Length < 8)
             {
                 Checker = false;
-                PasswordValidation = "* The password is too short";
+                PasswordValidation = "* Password Is Too Short";
             }
             else if (Password.Length > 20)
             {
                 Checker = false;
-                PasswordValidation = "* The password is too long";
+                PasswordValidation = "* Password Is Too Long";
             }
             else if (!ValidatorExtensions.IsPasswordValid(Password))
             {
                 Checker = false;
-                PasswordValidation = "* The password is very easy";
+                PasswordValidation = "* Password Is Very Easy";
             }
             else PasswordValidation = string.Empty;
 
@@ -129,37 +131,38 @@ namespace CleanBudget.ViewModels
                 if (register)
                 {
                     PasswordValidation = Email = Firstname = Lastname = string.Empty;
-                    _messenger.Send<SendAccount>(new SendAccount { Account = NewAccount });
-                    _messenger.Send<Navigation>(new Navigation { ViewModelType = typeof(HomeViewModel) });
+                    _messenger.Send(new SendAccount(NewAccountId));
+                    _messenger.Send(new Navigation(typeof(HomeViewModel)));
                 }
             }
         }
 
-        public Task<bool> TryRegister(PasswordBox pwdbox)
+        private Task<bool> TryRegister(PasswordBox pwdbox)
         {
             bool flag = true;
             try
             {
                 if (_userRepository.GetId(Email) == Guid.Empty)
                 {
+                    Account account = null;
                     try
                     {
                         var crypt = UserRepository.Encrypt(Password);
                         var user = new User(Email, Firstname, Lastname, crypt.Item1, crypt.Item2);
-                        var account = new Account(user);
+                        account = new Account(user, _currencyRepository.GetDollar());
                         user.SetAccount(account);
-                        _userRepository.Create(user);
-                        _accountRepository.Create(account);
-                        user.Account = account;
                         account.User = user;
-                        NewAccount = account;
+                        _accountRepository.Create(account);
+                        _userRepository.Create(user);
+                        
                     }
                     catch (Exception ex) { }
+                    finally { NewAccountId = account.Id; }
                 }
                 else
                 {
                     flag = false;
-                    PasswordValidation = "* This Email addres already registered";
+                    PasswordValidation = "* This Email Addres Already Registered";
                 }
             }
             catch(Exception ex) { }
@@ -170,13 +173,13 @@ namespace CleanBudget.ViewModels
             return Task.FromResult(flag);
         }
 
-        public void Login()
+        private void Login()
         {
             Email = Firstname = Lastname = Password = EmailValidation = FirstnameValidation = LastnameValidation = PasswordValidation = string.Empty;
-            _messenger.Send<Navigation>(new Navigation { ViewModelType = typeof(LoginViewModel) });
+            _messenger.Send<Navigation>(new Navigation(typeof(LoginViewModel)));
         }
 
-        public void Loaded() => _messenger.Send<Resize>(new Resize(700, 500, false));
+        private void Loaded() => _messenger.Send(new Resize(700, 500, false));
         
         private void PasswordChanged(PasswordBox pwdbox) { if (pwdbox != null) Password = pwdbox.Password; }
 

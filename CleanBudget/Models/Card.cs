@@ -8,37 +8,36 @@ namespace CleanBudget.Models
     public class Card
     {
         public Guid Id { get; set; }
-        [MaxLength(50)]
+        [MaxLength(20)]
         public string Title { get; set; }
-        public double Balance { get; set; }
-        [MaxLength(50)]
-        public string Currency { get; set; }
-        [MaxLength(50)]
+        [MaxLength(100)]
         public string Description { get; set; }
+        public double Balance { get; set; }
+        public Guid? CurrencyId { get; set; }
+        public virtual Currency Currency { get; set; }
+        public int Queue { get; set; }
         [MaxLength(50)]
         public string Icon { get; set; }
         [MaxLength(50)]
         public string Color { get; set; }
-        public int Queue { get; set; }
         public Guid? AccountId { get; set; }
         public virtual Account Account { get; set; }
 
         public Card()
         {
             Id = Guid.NewGuid();
-            Queue = 0;
         }
 
-        public Card(string title, double balance, string currency, string description, string icon, string color, Account account) : this()
+        public Card(string title, string description, double balance, Guid? currencyId, int queue, string icon, string color, Guid? accountId) : this()
         {
-            Icon = icon;
             Title = title;
-            Color = color;
-            Balance = balance;
-            Account = account;
-            Currency = currency;
             Description = description;
-            AccountId = account.Id;
+            Balance = balance;
+            CurrencyId = currencyId;
+            Queue = queue;
+            Icon = icon;
+            Color = color;
+            AccountId = accountId;
         }
     }
 }

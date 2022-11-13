@@ -4,6 +4,7 @@ using CleanBudget.Models;
 using CleanBudget.Database;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
+using System.Windows;
 
 namespace CleanBudget.Services.Repositories
 {
@@ -31,7 +32,9 @@ namespace CleanBudget.Services.Repositories
         {
             using (var db = new BudgetContext())
             {
-                return db.Accounts.Include(a => a.User).ToList();
+                return db.Accounts.Include(a => a.User)
+                                  .Include(a => a.Currency)
+                                  .ToList();
             }
         }
 
@@ -39,7 +42,18 @@ namespace CleanBudget.Services.Repositories
         {
             using (var db = new BudgetContext())
             {
-                return GetAll().FirstOrDefault(u => u.Id.Equals(id));
+                return db.Accounts.Include(a => a.User)
+                                  .Include(a => a.Currency)
+                                  .FirstOrDefault(u => u.Id.Equals(id));
+            }
+        }
+
+        public int GetCardsCount(Guid id)
+        {
+            using (var db = new BudgetContext())
+            {
+                return db.Accounts.Include(a => a.Cards)
+                                  .FirstOrDefault(u => u.Id.Equals(id)).Cards.Count;
             }
         }
 
@@ -47,10 +61,26 @@ namespace CleanBudget.Services.Repositories
         {
             using (var db = new BudgetContext())
             {
-                Account account = GetAll().FirstOrDefault(a => a.Id.Equals(item.Id));
+                Account account = db.Accounts.FirstOrDefault(a => a.Id.Equals(item.Id));
 
                 if (account != null)
                 {
+                    account.CurrencyId = item.CurrencyId;
+                    db.Accounts.Update(account);
+                    db.SaveChangesAsync();
+                }
+            }
+        }
+
+        public void UpdateCurrency(Guid id, Currency item)
+        {
+            using (var db = new BudgetContext())
+            {
+                Account account = db.Accounts.FirstOrDefault(a => a.Id.Equals(id));
+
+                if (account != null)
+                {
+                    account.CurrencyId = item.Id;
                     db.Accounts.Update(account);
                     db.SaveChangesAsync();
                 }

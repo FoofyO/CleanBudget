@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Linq;
-using System.Collections.Generic;
-using CleanBudget.Database;
 using CleanBudget.Models;
+using CleanBudget.Database;
+using System.Collections.Generic;
+using Microsoft.EntityFrameworkCore;
 
 namespace CleanBudget.Services.Repositories
 {
@@ -30,7 +31,7 @@ namespace CleanBudget.Services.Repositories
         {
             using (var db = new BudgetContext())
             {
-                return db.Cards.ToList();
+                return db.Cards.Include(c => c.Currency).ToList();
             }
         }
 
@@ -38,7 +39,7 @@ namespace CleanBudget.Services.Repositories
         {
             using (var db = new BudgetContext())
             {
-                return GetAll().FirstOrDefault(u => u.Id.Equals(id));
+                return db.Cards.Include(c => c.Currency).FirstOrDefault(u => u.Id.Equals(id));
             }
         }
 
@@ -46,13 +47,13 @@ namespace CleanBudget.Services.Repositories
         {
             using (var db = new BudgetContext())
             {
-                var card = GetAll().FirstOrDefault(c => c.Id.Equals(item.Id));
+                var card = db.Cards.FirstOrDefault(c => c.Id.Equals(item.Id));
 
                 if (card != null)
                 {
                     card.Title = item.Title;
                     card.Balance = item.Balance;
-                    card.Currency = item.Currency;
+                    card.CurrencyId = item.CurrencyId;
                     card.Description = item.Description;
                     card.Icon = item.Icon;
                     card.Color = item.Color;
@@ -66,7 +67,7 @@ namespace CleanBudget.Services.Repositories
         {
             using (var db = new BudgetContext())
             {
-                var card = GetAll().FirstOrDefault(c => c.Id.Equals(id));
+                var card = db.Cards.FirstOrDefault(c => c.Id.Equals(id));
 
                 if (card != null)
                 {
@@ -81,7 +82,7 @@ namespace CleanBudget.Services.Repositories
         {
             using (var db = new BudgetContext())
             {
-                var card = GetAll().FirstOrDefault(c => c.Id.Equals(id));
+                var card = db.Cards.Include(c => c.Currency).FirstOrDefault(c => c.Id.Equals(id));
 
                 if (card != null)
                 {   
@@ -96,7 +97,7 @@ namespace CleanBudget.Services.Repositories
         {
             using (var db = new BudgetContext())
             {
-                return db.Cards.Where(c => c.AccountId.Equals(id)).ToList();
+                return db.Cards.Include(c => c.Currency).Where(c => c.AccountId.Equals(id)).OrderBy(c => c.Queue).ToList();
             }
         }
     }

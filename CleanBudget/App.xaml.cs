@@ -18,8 +18,11 @@ namespace CleanBudget
         //View Models
         public static HomeViewModel homeViewModel;
         public static MainViewModel mainViewModel;
+        public static CardsViewModel cardsViewModel;
         public static LoginViewModel loginViewModel;
         public static AccountViewModel accountViewModel;
+        public static AddCardViewModel addCardViewModel;
+        public static EditCardViewModel editCardViewModel;
         public static RegisterViewModel registerViewModel;
         
         //Service
@@ -27,6 +30,7 @@ namespace CleanBudget
         public static UserRepository userRepository;
         public static AccountRepository accountRepository;
         public static CategoryRepository categoryRepository;
+        public static CurrencyRepository currencyRepository;
         #endregion
 
         protected override void OnStartup(StartupEventArgs e)
@@ -37,12 +41,8 @@ namespace CleanBudget
             messenger.Register<Exit>(this, Exit, true);
 
             InitializeService();
+            InitializeViewModels();
 
-            mainViewModel = new MainViewModel(messenger);
-            homeViewModel = new HomeViewModel(messenger);
-            accountViewModel = new AccountViewModel(messenger, userRepository);
-            loginViewModel = new LoginViewModel(messenger, userRepository);
-            registerViewModel = new RegisterViewModel(messenger, userRepository, accountRepository);
             mainViewModel.CurrentViewModel = loginViewModel;
 
             window = new MainWindow();
@@ -56,9 +56,22 @@ namespace CleanBudget
             userRepository = new UserRepository();
             accountRepository = new AccountRepository();
             categoryRepository = new CategoryRepository();
+            currencyRepository = new CurrencyRepository();
         }
 
-        private void Resize(Object obj)
+        private void InitializeViewModels()
+        {
+            mainViewModel = new MainViewModel(messenger);
+            homeViewModel = new HomeViewModel(messenger);
+            loginViewModel = new LoginViewModel(messenger, userRepository);
+            cardsViewModel = new CardsViewModel(messenger, accountRepository, cardRepository);
+            editCardViewModel = new EditCardViewModel(messenger, cardRepository, currencyRepository);
+            addCardViewModel = new AddCardViewModel(messenger, cardRepository, accountRepository, currencyRepository);
+            accountViewModel = new AccountViewModel(messenger, userRepository, accountRepository, currencyRepository);
+            registerViewModel = new RegisterViewModel(messenger, userRepository, accountRepository, currencyRepository);
+        }
+
+        private void Resize(object obj)
         {
             var message = obj as Resize;
             window.Width = message.Width;
@@ -68,6 +81,6 @@ namespace CleanBudget
             else window.ResizeMode = ResizeMode.CanMinimize;
         }
 
-        private void Exit(Object obj) => Application.Current.Shutdown();
+        private void Exit(object obj) => Current.Shutdown();
     }
 }
