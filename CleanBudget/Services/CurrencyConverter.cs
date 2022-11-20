@@ -12,12 +12,12 @@ namespace CleanBudget.Services
 
         public static double Convert(string fromCode, string toCode, double value)
         {
-            var client = new RestClient($"{api}{fromCode}/{toCode}.min.json");
+            var client = new RestClient($"{api}{fromCode.ToLower()}/{toCode.ToLower()}.json");
             client.UseSystemTextJson(new JsonSerializerOptions { });
             var request = new RestRequest();
             request.AddHeader("accept", "application/json");
             RestResponse response = client.Execute(request);
-            var result = (double)JsonNode.Parse(response.Content)[toCode] * value;
+            var result = (double)JsonNode.Parse(response.Content)[toCode.ToLower()] * value;
             return result;
         }
     }

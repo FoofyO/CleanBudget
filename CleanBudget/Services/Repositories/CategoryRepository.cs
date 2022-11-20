@@ -3,6 +3,8 @@ using CleanBudget.Models;
 using System.Collections.Generic;
 using CleanBudget.Database;
 using System.Linq;
+using MaterialDesignThemes.Wpf;
+using Microsoft.EntityFrameworkCore;
 
 namespace CleanBudget.Services.Repositories
 {
@@ -30,7 +32,7 @@ namespace CleanBudget.Services.Repositories
         {
             using (var db = new BudgetContext())
             {
-                return db.Categories.ToList();
+                return db.Categories.Include(c => c.Currency).ToList();
             }
         }
 
@@ -38,7 +40,7 @@ namespace CleanBudget.Services.Repositories
         {
             using (var db = new BudgetContext())
             {
-                return db.Categories.FirstOrDefault(u => u.Id.Equals(id));
+                return db.Categories.Include(c => c.Currency).FirstOrDefault(c => c.Id.Equals(id));
             }
         }
 
@@ -46,10 +48,15 @@ namespace CleanBudget.Services.Repositories
         {
             using (var db = new BudgetContext())
             {
-                Category category = db.Categories.FirstOrDefault(a => a.Id.Equals(item.Id));
+                var category = db.Categories.FirstOrDefault(c => c.Id.Equals(item.Id));
 
                 if (category != null)
                 {
+                    category.Icon = item.Icon;
+                    category.Color = item.Color;
+                    category.Title = item.Title;
+                    category.Consumption = item.Consumption;
+                    category.CurrencyId = item.CurrencyId;
                     db.Categories.Update(category);
                     db.SaveChangesAsync();
                 }
@@ -71,7 +78,7 @@ namespace CleanBudget.Services.Repositories
             }
         }
 
-        public void UpdateBalance(Guid id, double balance)
+        public void UpdateConsumption(Guid id, double consumption)
         {
             using (var db = new BudgetContext())
             {
@@ -79,7 +86,7 @@ namespace CleanBudget.Services.Repositories
 
                 if (category != null)
                 {
-                    category.Balance = balance;
+                    category.Consumption = consumption;
                     db.Categories.Update(category);
                     db.SaveChanges();
                 }
@@ -90,7 +97,10 @@ namespace CleanBudget.Services.Repositories
         {
             using (var db = new BudgetContext())
             {
-                return db.Categories.Where(c => c.AccountId.Equals(id)).ToList();
+                return db.Categories.Include(c => c.Currency)
+                                    .Where(c => c.AccountId.Equals(id))
+                                    .OrderBy(c => c.Queue)
+                                    .ToList();
             }
         }
     }

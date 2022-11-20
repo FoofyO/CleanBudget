@@ -1,9 +1,9 @@
 ﻿using System;
 using CleanBudget.Models;
+using CleanBudget.Services;
 using CleanBudget.Messages;
 using GalaSoft.MvvmLight.Command;
 using GalaSoft.MvvmLight.Messaging;
-using CleanBudget.Services;
 
 namespace CleanBudget.ViewModels
 {
@@ -33,13 +33,17 @@ namespace CleanBudget.ViewModels
             else if (message.Equals("Cards")) CurrentViewModel = App.cardsViewModel;
             else if (message.Equals("AddCard")) CurrentViewModel = App.addCardViewModel;
             else if (message.Equals("EditCard")) CurrentViewModel = App.editCardViewModel;
+            else if (message.Equals("Operations")) CurrentViewModel = App.operationsViewModel;
+            else if (message.Equals("Categories")) CurrentViewModel = App.categoriesViewModel;
+            else if (message.Equals("AddCategory")) CurrentViewModel = App.addCategoryViewModel;
+            else if (message.Equals("EditCategory")) CurrentViewModel = App.editCategoryViewModel;
             else if (message.Equals("Exit")) _messenger.Send(new Exit());
         }
 
         private void Loaded()
         {
             CurrentViewModel = App.accountViewModel;
-            _messenger.Send(new Resize(450, 1100, true));
+            _messenger.Send(new Resize(450, 1100, false, true));
         }
         
         private void NavBar(NavBar obj) => Navigation(obj.View);

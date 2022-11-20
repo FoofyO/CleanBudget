@@ -8,14 +8,16 @@ namespace CleanBudget.Messages
         public double Height { get; set; }
         public double Width { get; set; }
         public bool CanResize { get; set; }
+        public bool IsMaximized { get; set; }
 
         public Resize() { }
 
-        public Resize(double height, double width, bool canResize)
+        public Resize(double height, double width, bool canResize, bool isMaximized)
         {
-            this.Height = height;
-            this.Width = width;
-            this.CanResize = canResize;
+            Height = height;
+            Width = width;
+            CanResize = canResize;
+            IsMaximized = isMaximized;
         }
     }
 }

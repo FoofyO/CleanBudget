@@ -5,11 +5,10 @@ using CleanBudget.Messages;
 using CleanBudget.Services;
 using System.Threading.Tasks;
 using System.Windows.Controls;
+using System.Collections.Generic;
 using GalaSoft.MvvmLight.Command;
 using GalaSoft.MvvmLight.Messaging;
 using CleanBudget.Services.Repositories;
-using System.Collections.Generic;
-using MaterialDesignThemes.Wpf;
 
 namespace CleanBudget.ViewModels
 {
@@ -98,13 +97,18 @@ namespace CleanBudget.ViewModels
             if (PrevCurrency != CurrentCurrency)
             {
                 PrevCurrency = CurrentCurrency;
-                Task.Run(() => _accountRepository.UpdateCurrency(CurrentAccountId, CurrentCurrency));
+                Task.Run(() =>
+                {
+                    _accountRepository.UpdateCurrency(CurrentAccountId, CurrentCurrency);
+                    _messenger.Send(new RefreshCards(true));
+                    _messenger.Send(new RefreshCategories(true));
+                });
             }
         }
 
         private async void ChangeFullName()
         {
-            if (!PrevFirstname.Equals(Firstname) && !PrevLastname.Equals(Lastname))
+            if (!PrevFirstname.Equals(Firstname) || !PrevLastname.Equals(Lastname))
             {
                 Checker = true;
 

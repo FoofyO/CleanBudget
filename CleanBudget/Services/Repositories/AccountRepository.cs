@@ -4,7 +4,6 @@ using CleanBudget.Models;
 using CleanBudget.Database;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
-using System.Windows;
 
 namespace CleanBudget.Services.Repositories
 {
@@ -44,7 +43,7 @@ namespace CleanBudget.Services.Repositories
             {
                 return db.Accounts.Include(a => a.User)
                                   .Include(a => a.Currency)
-                                  .FirstOrDefault(u => u.Id.Equals(id));
+                                  .FirstOrDefault(a => a.Id.Equals(id));
             }
         }
 
@@ -53,7 +52,16 @@ namespace CleanBudget.Services.Repositories
             using (var db = new BudgetContext())
             {
                 return db.Accounts.Include(a => a.Cards)
-                                  .FirstOrDefault(u => u.Id.Equals(id)).Cards.Count;
+                                  .FirstOrDefault(a => a.Id.Equals(id)).Cards.Count;
+            }
+        }
+
+        public int GetCategoryCount(Guid id)
+        {
+            using (var db = new BudgetContext())
+            {
+                return db.Accounts.Include(a => a.Categories)
+                                  .FirstOrDefault(a => a.Id.Equals(id)).Categories.Count;
             }
         }
 

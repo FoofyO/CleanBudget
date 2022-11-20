@@ -8,6 +8,7 @@ using System.Windows.Controls;
 using GalaSoft.MvvmLight.Command;
 using GalaSoft.MvvmLight.Messaging;
 using CleanBudget.Services.Repositories;
+using CleanBudget.Database;
 
 namespace CleanBudget.ViewModels
 {
@@ -179,7 +180,7 @@ namespace CleanBudget.ViewModels
             _messenger.Send<Navigation>(new Navigation(typeof(LoginViewModel)));
         }
 
-        private void Loaded() => _messenger.Send(new Resize(700, 500, false));
+        private void Loaded() => _messenger.Send(new Resize(700, 500, false, false));
         
         private void PasswordChanged(PasswordBox pwdbox) { if (pwdbox != null) Password = pwdbox.Password; }
 

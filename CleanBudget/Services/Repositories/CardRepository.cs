@@ -39,7 +39,7 @@ namespace CleanBudget.Services.Repositories
         {
             using (var db = new BudgetContext())
             {
-                return db.Cards.Include(c => c.Currency).FirstOrDefault(u => u.Id.Equals(id));
+                return db.Cards.Include(c => c.Currency).FirstOrDefault(c => c.Id.Equals(id));
             }
         }
 
@@ -82,7 +82,7 @@ namespace CleanBudget.Services.Repositories
         {
             using (var db = new BudgetContext())
             {
-                var card = db.Cards.Include(c => c.Currency).FirstOrDefault(c => c.Id.Equals(id));
+                var card = db.Cards.FirstOrDefault(c => c.Id.Equals(id));
 
                 if (card != null)
                 {   
@@ -97,7 +97,10 @@ namespace CleanBudget.Services.Repositories
         {
             using (var db = new BudgetContext())
             {
-                return db.Cards.Include(c => c.Currency).Where(c => c.AccountId.Equals(id)).OrderBy(c => c.Queue).ToList();
+                return db.Cards.Include(c => c.Currency)
+                               .Where(c => c.AccountId.Equals(id))
+                               .OrderBy(c => c.Queue)
+                               .ToList();
             }
         }
     }

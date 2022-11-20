@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -22,22 +23,21 @@ namespace CleanBudget.Models
         public string Color { get; set; }
         public Guid? AccountId { get; set; }
         public virtual Account Account { get; set; }
+        public virtual ICollection<DeductOperation> DeductOperations { get; set; }
+        public virtual ICollection<RefillOperation> RefillOperations { get; set; }
 
-        public Card()
-        {
-            Id = Guid.NewGuid();
-        }
+        public Card() => Id = Guid.NewGuid();
 
         public Card(string title, string description, double balance, Guid? currencyId, int queue, string icon, string color, Guid? accountId) : this()
         {
-            Title = title;
-            Description = description;
-            Balance = balance;
-            CurrencyId = currencyId;
-            Queue = queue;
             Icon = icon;
             Color = color;
+            Queue = queue;
+            Title = title;
+            Balance = balance;
             AccountId = accountId;
+            CurrencyId = currencyId;
+            Description = description;
         }
     }
 }

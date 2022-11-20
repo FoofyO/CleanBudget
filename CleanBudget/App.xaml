@@ -31,26 +31,38 @@
             <SolidColorBrush x:Key="MoneyGreen" Color="#259779" />
 
             <!--Data Template-->
-            <DataTemplate DataType="{x:Type vm:LoginViewModel}">
-                <v:LoginView/>
-            </DataTemplate>
-            <DataTemplate DataType="{x:Type vm:RegisterViewModel}">
-                <v:RegisterView/>
-            </DataTemplate>
             <DataTemplate DataType="{x:Type vm:HomeViewModel}">
                 <v:HomeView/>
             </DataTemplate>
-            <DataTemplate DataType="{x:Type vm:AccountViewModel}">
-                <v:AccountView/>
-            </DataTemplate>
             <DataTemplate DataType="{x:Type vm:CardsViewModel}">
                 <v:CardsView/>
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type vm:LoginViewModel}">
+                <v:LoginView/>
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type vm:AccountViewModel}">
+                <v:AccountView/>
             </DataTemplate>
             <DataTemplate DataType="{x:Type vm:AddCardViewModel}">
                 <v:AddCardView/>
             </DataTemplate>
             <DataTemplate DataType="{x:Type vm:EditCardViewModel}">
                 <v:EditCardView/>
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type vm:RegisterViewModel}">
+                <v:RegisterView/>
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type vm:CategoriesViewModel}">
+                <v:CategoriesView/>
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type vm:AddCategoryViewModel}">
+                <v:AddCategoryView/>
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type vm:EditCategoryViewModel}">
+                <v:EditCategoryView/>
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type vm:OperationsViewModel}">
+                <v:OperationsView/>
             </DataTemplate>
 
 

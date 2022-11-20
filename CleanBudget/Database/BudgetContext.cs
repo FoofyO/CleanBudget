@@ -23,8 +23,8 @@ namespace CleanBudget.Database
             modelBuilder.Entity<User>()
                         .HasOne(u => u.Account)
                         .WithOne(a => a.User)
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .HasForeignKey<Account>(a => a.UserId);
+                        .HasForeignKey<Account>(a => a.UserId)
+                        .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<Currency>().HasData(
                 new Currency("Azerbaijani Manat", "AZN"),
@@ -45,5 +45,8 @@ namespace CleanBudget.Database
         public DbSet<Account> Accounts { get; set; }
         public DbSet<Category> Categories { get; set; }
         public DbSet<Currency> Currencies { get; set; }
+        public DbSet<DeductOperation> DeductOperations { get; set; }
+        public DbSet<RefillOperation> RefillOperations { get; set; }
+        public DbSet<TransferOperation> TransferOperations { get; set; }
     }
 }

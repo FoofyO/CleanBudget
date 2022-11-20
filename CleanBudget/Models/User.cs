@@ -18,7 +18,7 @@ namespace CleanBudget.Models
         public string Hash { get; set; }
         [MaxLength(36)]
         public string Salt { get; set; }
-        public virtual Guid? AccountId { get; set; }
+        public Guid? AccountId { get; set; }
         public virtual Account Account { get; set; }
 
         public User() => Id = Guid.NewGuid();

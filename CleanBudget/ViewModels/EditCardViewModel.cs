@@ -1,12 +1,12 @@
-﻿using CleanBudget.Messages;
+﻿using System;
 using CleanBudget.Models;
+using CleanBudget.Messages;
 using CleanBudget.Services;
-using CleanBudget.Services.Repositories;
+using System.Threading.Tasks;
+using System.Collections.Generic;
 using GalaSoft.MvvmLight.Command;
 using GalaSoft.MvvmLight.Messaging;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
+using CleanBudget.Services.Repositories;
 
 namespace CleanBudget.ViewModels
 {
@@ -108,7 +108,7 @@ namespace CleanBudget.ViewModels
         private void Back()
         {
             CardTitle = TitleValidation = CardDescription = string.Empty;
-            _messenger.Send(new NavBar() { View = "Cards" });
+            _messenger.Send(new NavBar("Cards"));
         }
         
         private void ReceiveCard(SendCard obj) => CurrentCardId = obj.CardId;

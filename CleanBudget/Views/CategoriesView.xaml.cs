@@ -1,13 +1,12 @@
 ﻿using System;
-using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Controls;
 
 namespace CleanBudget.Views
 {
-    public partial class CardsView : UserControl
+    public partial class CategoriesView : UserControl
     {
-        public CardsView()
+        public CategoriesView()
         {
             InitializeComponent();
         }

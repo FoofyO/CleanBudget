@@ -24,6 +24,10 @@ namespace CleanBudget
         public static AddCardViewModel addCardViewModel;
         public static EditCardViewModel editCardViewModel;
         public static RegisterViewModel registerViewModel;
+        public static OperationsViewModel operationsViewModel;
+        public static CategoriesViewModel categoriesViewModel;
+        public static AddCategoryViewModel addCategoryViewModel;
+        public static EditCategoryViewModel editCategoryViewModel;
         
         //Service
         public static CardRepository cardRepository;
@@ -31,6 +35,9 @@ namespace CleanBudget
         public static AccountRepository accountRepository;
         public static CategoryRepository categoryRepository;
         public static CurrencyRepository currencyRepository;
+        public static DeductOperationRepository deductRepository;
+        public static RefillOperationRepository refillRepository;
+        public static TransferOperationRepository transferRepository;
         #endregion
 
         protected override void OnStartup(StartupEventArgs e)
@@ -57,6 +64,9 @@ namespace CleanBudget
             accountRepository = new AccountRepository();
             categoryRepository = new CategoryRepository();
             currencyRepository = new CurrencyRepository();
+            deductRepository = new DeductOperationRepository();
+            refillRepository = new RefillOperationRepository();
+            transferRepository = new TransferOperationRepository();
         }
 
         private void InitializeViewModels()
@@ -64,11 +74,15 @@ namespace CleanBudget
             mainViewModel = new MainViewModel(messenger);
             homeViewModel = new HomeViewModel(messenger);
             loginViewModel = new LoginViewModel(messenger, userRepository);
-            cardsViewModel = new CardsViewModel(messenger, accountRepository, cardRepository);
             editCardViewModel = new EditCardViewModel(messenger, cardRepository, currencyRepository);
+            editCategoryViewModel = new EditCategoryViewModel(messenger, categoryRepository, currencyRepository);
             addCardViewModel = new AddCardViewModel(messenger, cardRepository, accountRepository, currencyRepository);
             accountViewModel = new AccountViewModel(messenger, userRepository, accountRepository, currencyRepository);
             registerViewModel = new RegisterViewModel(messenger, userRepository, accountRepository, currencyRepository);
+            operationsViewModel = new OperationsViewModel(messenger, deductRepository, refillRepository, transferRepository);
+            addCategoryViewModel = new AddCategoryViewModel(messenger, categoryRepository, accountRepository, currencyRepository);
+            cardsViewModel = new CardsViewModel(messenger, accountRepository, cardRepository, refillRepository, transferRepository);
+            categoriesViewModel = new CategoriesViewModel(messenger, accountRepository, categoryRepository, cardRepository, deductRepository);
         }
 
         private void Resize(object obj)
@@ -79,6 +93,13 @@ namespace CleanBudget
 
             if (message.CanResize) window.ResizeMode = ResizeMode.CanResizeWithGrip;
             else window.ResizeMode = ResizeMode.CanMinimize;
+
+            if (message.IsMaximized)
+            {
+                window.WindowState = WindowState.Maximized;
+                window.ResizeMode = ResizeMode.NoResize;
+            }
+            else window.WindowState = WindowState.Normal;
         }
 
         private void Exit(object obj) => Current.Shutdown();

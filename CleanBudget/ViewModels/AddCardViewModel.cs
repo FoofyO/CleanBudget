@@ -1,13 +1,12 @@
-﻿using CleanBudget.Messages;
+﻿using System;
 using CleanBudget.Models;
+using CleanBudget.Messages;
 using CleanBudget.Services;
-using System;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using GalaSoft.MvvmLight.Command;
 using GalaSoft.MvvmLight.Messaging;
 using CleanBudget.Services.Repositories;
-using System.Windows;
 
 namespace CleanBudget.ViewModels
 {
@@ -77,7 +76,7 @@ namespace CleanBudget.ViewModels
                 try
                 {
                     int cardCount = _accountRepository.GetCardsCount(CurrentAccountId) + 1;
-                    _cardRepository.Create(new Card(CardTitle, CardDescription, CardBalance, CardCurrency.Id, cardCount, CardIcon, CardColor, CurrentAccountId));
+                    _cardRepository.Create(new Card(CardTitle, CardDescription, Math.Round(CardBalance, 2), CardCurrency.Id, cardCount, CardIcon, CardColor, CurrentAccountId));
                     _messenger.Send(new RefreshCards(true));
                     Back();
                 }
@@ -105,7 +104,7 @@ namespace CleanBudget.ViewModels
             CardIcon = Icons[0];
             CardCurrency = Currencies[0];
             CardTitle = TitleValidation = CardDescription = string.Empty;
-            _messenger.Send(new NavBar() { View = "Cards" });
+            _messenger.Send(new NavBar("Cards"));
         }
         
         private void ReceiveAccount(SendAccount obj) => CurrentAccountId = obj.AccountId;

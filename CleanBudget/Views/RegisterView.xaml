@@ -18,7 +18,7 @@
         </i:EventTrigger>
     </i:Interaction.Triggers>
     <Grid>
-        <md:Card UniformCornerRadius="8" Margin="25" Panel.ZIndex="-1" 
+        <md:Card UniformCornerRadius="8" Margin="25" Panel.ZIndex="1" 
              md:ShadowAssist.ShadowDepth="Depth2" Visibility="{Binding IsVisible}"
              Background="{DynamicResource MaterialDesignPaper}">
             <fa:ImageAwesome Foreground="White" Icon="Spinner" Spin="{Binding IsSpin}" Height="70" Width="70" SpinDuration="1.5"/>
